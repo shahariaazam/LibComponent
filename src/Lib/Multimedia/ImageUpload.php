@@ -2,38 +2,84 @@
 /*
  * Image Upload Class
  */
-class ImageUpload{
-    public function ImgUpload(){
-        if(isset($_POST['submit']))
+class ImageUpload
+{
+    /**
+     * @param null $path            Custom path where uploaded image will be stored
+     * @param null $maximumSize     Custom Maximum size in (Bytes) will be passed.
+     * @param array $allowedType    Custom extension type (JPG|GIF|PNG)
+     * @param null $option          Extra options as array where we can define 'Image File Name', blah blah blah
+     *
+     * @return string
+     */
+    public function ImgUpload($path=null, $maximumSize=null, array $allowedType=null, $option=null)
+    {
+        if (isset($_POST['submit']))
         {
-            if(!empty($_FILES['ImgName']['name']))
+            if (!empty($_FILES['ImgName']['name']))
             {
-                if($_FILES['ImgName']['size']<1.049e+6)
+                if ($_FILES['ImgName']['size'] < 1.049e+6)
                 {
-                    if($_FILES['ImgName']['type']=='image/jpeg' || $_FILES['ImgName']['type']=='image/png' || $_FILES['ImgName']['type']=='image/gif')
+                    if ($_FILES['ImgName']['type'] == 'image/jpeg' || $_FILES['ImgName']['type'] == 'image/png' || $_FILES['ImgName']['type'] == 'image/gif')
                     {
-                        if(move_uploaded_file($_FILES['ImgName']['tmp_name'],$_FILES['ImgName']['name']))
+                        if (move_uploaded_file($_FILES['ImgName']['tmp_name'], $_FILES['ImgName']['name']))
                         {
-                            echo 'Image has been Uploaded';
+                            $result = 'Image has been Uploaded';
+                            return $result;
                         }
                         else
                         {
-                            echo 'Sorry!!! Something happened';
+                            return false;
                         }
                     }
-                    else{
-                        echo "Please select jpg,png,gif image";
+                    else
+                    {
+                        $result = "Please select jpg,png,gif image";
+                        return $result;
                     }
                 }
                 else
                 {
-                    echo "Image must me less the 1 MB";
+                    $result = "Image must me less the 1 MB";
+                    return $result;
                 }
             }
             else
             {
-                 return 'You do not select any file';
+                $result = 'You do not select any file';
+                return $result;
             }
         }
+    }
+
+    /**
+     * @param $Size
+     * @TODO    Examine image size and then implement it to the main function
+     */
+    function SizeLimit($maximumSize = null)
+    {
+
+    }
+
+    /**
+     * @param null $type
+     *
+     * @return bool
+     * @TODO check type of Image through checking Uploaded document's MIME type
+     */
+    function ImageType($allowedType = null)
+    {
+        return true;
+    }
+
+    /**
+     * @param null $path
+     *
+     * @return bool
+     * @TODO Check the given @path is valid or not
+     */
+    function CheckPath($path = null)
+    {
+        return true;
     }
 }

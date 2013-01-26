@@ -18,24 +18,32 @@ class ImageUpload
         {
             if (!empty($_FILES['ImgName']['name']))
             {
-                if ($x=self::SizeLimit($_FILES['ImgName']['size'],$maximumSize)== true)
+                if ($x=self::SizeLimit($_FILES['ImgName']['size'],$maximumSize)=== true)
                 {
-                    if ($x=self::ImageType($_FILES['ImgName']['type'],$allowedType) == true)
+                    if ($x=self::ImageType($_FILES['ImgName']['type'],$allowedType) === true)
                     {
-                        if (move_uploaded_file($_FILES['ImgName']['tmp_name'], $_FILES['ImgName']['name']))
-                        {
-                            $result = 'Image has been Uploaded';
-                            return $result;
-                        }
-                        else
-                        {
-                            return false;
-                        }
+						if($x=self::CheckPath($path)=== true)
+						{
+							if (move_uploaded_file($_FILES['ImgName']['tmp_name'],$path. $_FILES['ImgName']['name']))
+							{
+								$result = 'Image has been Uploaded';
+								return $result;
+							}
+							else
+							{
+								return false;
+							}
+						}
+						else
+						{
+							  return "fs;dl,";
+						}
                     }
                     else
                     {
                         $result="Please Select ";
-                        if($allowedType != null){
+                        if($allowedType != null)
+						{
                             foreach($allowedType as $allowedTypes)
                             {
                                 $result.= "/".$allowedTypes;
@@ -62,11 +70,12 @@ class ImageUpload
         }
     }
 
-    /**
-     * @param $Size
-     * @TODO    Examine image size and then implement it to the main function
-     */
-    function SizeLimit($ImgSize,$maximumSize = null)
+	/**
+	 * @param $ImgSize               Image size which is selected for upload
+	 * @param null $maximumSize      Custom max image size passed
+	 * @return bool                  Return true or false
+	 */
+	function SizeLimit($ImgSize,$maximumSize = null)
     {
        if($maximumSize != null){
            if($ImgSize < $maximumSize){
@@ -83,19 +92,20 @@ class ImageUpload
        }
     }
 
-    /**
-     * @param null $type
-     *
-     * @return bool
-     * @TODO check type of Image through checking Uploaded document's MIME type
-     */
-    function ImageType($ImgType,array $allowedType = null)
+	/**
+	 * @param $ImgType                  Image type which is selected for upload
+	 * @param array $allowedType        Allowed image type
+	 * @return bool                     Return true or false
+	 */
+	function ImageType($ImgType,array $allowedType = null)
     {
-        if($allowedType != null){
+        if($allowedType != null)
+		{
             $i=0;
             while($i<sizeof($allowedType))
             {
-                if($ImgType=="image/".$allowedType[$i]){
+                if($ImgType=="image/".$allowedType[$i])
+				{
                     return true;
                     break;
                 }
@@ -105,7 +115,7 @@ class ImageUpload
         }
         else
         {
-            if($ImgType=='image/jpg' || $ImgType=='image/png' || $ImgType=='image/gif')
+            if($ImgType=="image/jpg" || $ImgType="image/png" || $ImgType=="image/gif")
             {
                 return true;
             }
@@ -116,14 +126,25 @@ class ImageUpload
         }
     }
 
-    /**
-     * @param null $path
-     *
-     * @return bool
-     * @TODO Check the given @path is valid or not
-     */
-    function CheckPath($path = null)
-    {
-        return true;
+	/**
+	 * @param null $path
+	 * @return bool
+	 */
+	function CheckPath($path = null)
+	{
+		if($path != null)
+		{
+			if(is_dir($path)){
+				return  true;
+			}
+			else
+			{
+				 return false;
+			}
+		}
+		else
+		{
+			return true;
+		}
     }
 }

@@ -12,35 +12,60 @@ class ImageUpload
      *
      * @return string
      */
-    public function ImgUpload($path=null, $maximumSize=null, array $allowedType=null, $option=null)
+    public function ImgUpload($path = null, $maximumSize = null, array $allowedType = null, $option = null)
     {
         if (isset($_POST['submit']))
         {
             if (!empty($_FILES['ImgName']['name']))
             {
-                if ($_FILES['ImgName']['size'] < 1.049e+6)
+                if ($x = self::SizeLimit($_FILES['ImgName']['size'], $maximumSize) === true)
                 {
-                    if ($_FILES['ImgName']['type'] == 'image/jpeg' || $_FILES['ImgName']['type'] == 'image/png' || $_FILES['ImgName']['type'] == 'image/gif')
+                    if ($x = self::ImageType($_FILES['ImgName']['type'], $allowedType) === true)
                     {
-                        if (move_uploaded_file($_FILES['ImgName']['tmp_name'], $_FILES['ImgName']['name']))
+                        if ($x = self::CheckPath($path) === true)
                         {
-                            $result = 'Image has been Uploaded';
-                            return $result;
+                            if ($x = self::CheckPermission($path) === true)
+                            {
+                                if (move_uploaded_file($_FILES['ImgName']['tmp_name'], $path . $_FILES['ImgName']['name']))
+                                {
+                                    $result = 'Image has been Uploaded';
+                                    return $result;
+                                }
+                                else
+                                {
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                return "Directory do not have write permission,";
+                            }
                         }
                         else
                         {
-                            return false;
+                            return "Directory could not found,";
                         }
                     }
                     else
                     {
-                        $result = "Please select jpg,png,gif image";
-                        return $result;
+                        $result = "Please Select ";
+                        if ($allowedType != null)
+                        {
+                            foreach ($allowedType as $allowedTypes)
+                            {
+                                $result .= "/" . $allowedTypes;
+                            }
+                            return $result . " image";
+                        }
+                        else
+                        {
+                            return $result . " jpg/png/gif image";
+                        }
                     }
                 }
                 else
                 {
-                    $result = "Image must me less the 1 MB";
+                    $result = "Image must me less then" . $maximumSize . " byte";
                     return $result;
                 }
             }
@@ -53,26 +78,62 @@ class ImageUpload
     }
 
     /**
-     * @param $Size
-     * @TODO    Examine image size and then implement it to the main function
+     * @param $ImgSize               Image size which is selected for upload
+     * @param null $maximumSize      Custom max image size passed
+     *
+     * @return bool                  Return true or false
      */
-    function SizeLimit($maximumSize = null)
+    function SizeLimit($ImgSize, $maximumSize = null)
     {
-
+        if ($maximumSize != null)
+        {
+            if ($ImgSize < $maximumSize)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return true;
+        }
     }
 
     /**
-     * @param null $type
+     * @param $ImgType                  Image type which is selected for upload
+     * @param array $allowedType        Allowed image type
      *
-     * @return bool
-     * @TODO check type of Image through checking Uploaded document's MIME type
+     * @return bool                     Return true or false
      */
-    function ImageType($ImageFile = null, array $allowedType = null)
+    function ImageType($ImgType, array $allowedType = null)
     {
-        if(!empty($ImageFile))
+        if ($allowedType != null)
         {
-            $type=getimagesize($ImageFile);
-            return $type['mime'];
+            $i = 0;
+            while ($i < sizeof($allowedType))
+            {
+                if ($ImgType == "image/" . $allowedType[$i])
+                {
+                    return true;
+                    break;
+                }
+                $i++;
+            }
+            return false;
+        }
+        else
+        {
+            if ($ImgType == "image/jpg" || $ImgType = "image/png" || $ImgType == "image/gif")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 
@@ -80,34 +141,47 @@ class ImageUpload
      * @param null $path
      *
      * @return bool
-     * @TODO Check the given @path is valid or not
      */
     function CheckPath($path = null)
     {
-        //If the directory is not valid then return false
-        if(!is_dir($path))
+        if ($path != null)
         {
-            return false;
+            if (is_dir($path))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
-        if($this->DirectoryPermission($path) === false)
+        else
         {
-            return false;
+            return true;
         }
-        return true;
     }
 
     /**
-     * @param null $Directory
+     * @param null $path
      *
      * @return bool
      */
-    function DirectoryPermission($Directory = null)
+    function CheckPermission($path = null)
     {
-        //return false if Directory is not writable
-        if(!is_writable($Directory))
+        if ($path != null)
         {
-            return false;
+            if (is_writable($path))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
-        return true;
+        else
+        {
+            return true;
+        }
     }
 }

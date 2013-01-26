@@ -67,9 +67,13 @@ class ImageUpload
      * @return bool
      * @TODO check type of Image through checking Uploaded document's MIME type
      */
-    function ImageType($allowedType = null)
+    function ImageType($ImageFile = null, array $allowedType = null)
     {
-        return true;
+        if(!empty($ImageFile))
+        {
+            $type=getimagesize($ImageFile);
+            return $type['mime'];
+        }
     }
 
     /**
@@ -80,6 +84,30 @@ class ImageUpload
      */
     function CheckPath($path = null)
     {
+        //If the directory is not valid then return false
+        if(!is_dir($path))
+        {
+            return false;
+        }
+        if($this->DirectoryPermission($path) === false)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param null $Directory
+     *
+     * @return bool
+     */
+    function DirectoryPermission($Directory = null)
+    {
+        //return false if Directory is not writable
+        if(!is_writable($Directory))
+        {
+            return false;
+        }
         return true;
     }
 }

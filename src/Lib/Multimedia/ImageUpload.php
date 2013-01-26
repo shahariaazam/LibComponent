@@ -24,19 +24,26 @@ class ImageUpload
                     {
 						if($x=self::CheckPath($path)=== true)
 						{
-							if (move_uploaded_file($_FILES['ImgName']['tmp_name'],$path. $_FILES['ImgName']['name']))
+							if($x=self::CheckPermission($path)=== true)
 							{
-								$result = 'Image has been Uploaded';
-								return $result;
+								if (move_uploaded_file($_FILES['ImgName']['tmp_name'],$path. $_FILES['ImgName']['name']))
+								{
+									$result = 'Image has been Uploaded';
+									return $result;
+								}
+								else
+								{
+									return false;
+								}
 							}
 							else
 							{
-								return false;
+								return "Directory do not have write permission,";
 							}
 						}
 						else
 						{
-							  return "fs;dl,";
+							  return "Directory could not found,";
 						}
                     }
                     else
@@ -147,4 +154,21 @@ class ImageUpload
 			return true;
 		}
     }
+	function CheckPermission($path = null)
+	{
+		if($path != null)
+		{
+			if(is_writable($path)){
+				return  true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return true;
+		}
+	}
 }

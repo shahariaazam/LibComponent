@@ -1,6 +1,6 @@
 <?php
 /*
- * Imaage Upload Class
+ * Image Upload Class
  */
 class ImageUpload{
     public function ImgUpload(){
@@ -8,12 +8,27 @@ class ImageUpload{
         {
             if(!empty($_FILES['ImgName']['name']))
             {
-                if(move_uploaded_file($_FILES['ImgName']['tmp_name'],$path."/".$_FILES['ImgName']['name'])){
-                    echo 'ok';
-                }else{
-                    echo 'mm';
+                if($_FILES['ImgName']['size']<1.049e+6)
+                {
+                    if($_FILES['ImgName']['type']=='image/jpeg' || $_FILES['ImgName']['type']=='image/png' || $_FILES['ImgName']['type']=='image/gif')
+                    {
+                        if(move_uploaded_file($_FILES['ImgName']['tmp_name'],$_FILES['ImgName']['name']))
+                        {
+                            echo 'Image has been Uploaded';
+                        }
+                        else
+                        {
+                            echo 'Sorry!!! Something happened';
+                        }
+                    }
+                    else{
+                        echo "Please select jpg,png,gif image";
+                    }
                 }
-                // $ImgName=$_FILES['ImgName']['name'];
+                else
+                {
+                    echo "Image must me less the 1 MB";
+                }
             }
             else
             {

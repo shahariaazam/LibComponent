@@ -18,9 +18,9 @@ class ImageUpload
         {
             if (!empty($_FILES['ImgName']['name']))
             {
-                if ($_FILES['ImgName']['size'] < 1.049e+6)
+                if ($x=self::SizeLimit($_FILES['ImgName']['size'],$maximumSize)== true)
                 {
-                    if ($_FILES['ImgName']['type'] == 'image/jpeg' || $_FILES['ImgName']['type'] == 'image/png' || $_FILES['ImgName']['type'] == 'image/gif')
+                    if ($x=self::ImageType($_FILES['ImgName']['type'],$allowedType) == true)
                     {
                         if (move_uploaded_file($_FILES['ImgName']['tmp_name'], $_FILES['ImgName']['name']))
                         {
@@ -34,13 +34,23 @@ class ImageUpload
                     }
                     else
                     {
-                        $result = "Please select jpg,png,gif image";
-                        return $result;
+                        $result="Please Select ";
+                        if($allowedType != null){
+                            foreach($allowedType as $allowedTypes)
+                            {
+                                $result.= "/".$allowedTypes;
+                            }
+                            return $result." image";
+                        }
+                        else
+                        {
+                            return $result." jpg/png/gif image";
+                        }
                     }
                 }
                 else
                 {
-                    $result = "Image must me less the 1 MB";
+                    $result = "Image must me less then". $maximumSize. " byte";
                     return $result;
                 }
             }
@@ -56,9 +66,21 @@ class ImageUpload
      * @param $Size
      * @TODO    Examine image size and then implement it to the main function
      */
-    function SizeLimit($maximumSize = null)
+    function SizeLimit($ImgSize,$maximumSize = null)
     {
-
+       if($maximumSize != null){
+           if($ImgSize < $maximumSize){
+               return true;
+           }
+           else
+           {
+               return false;
+           }
+       }
+       else
+       {
+           return true;
+       }
     }
 
     /**
@@ -67,9 +89,31 @@ class ImageUpload
      * @return bool
      * @TODO check type of Image through checking Uploaded document's MIME type
      */
-    function ImageType($allowedType = null)
+    function ImageType($ImgType,array $allowedType = null)
     {
-        return true;
+        if($allowedType != null){
+            $i=0;
+            while($i<sizeof($allowedType))
+            {
+                if($ImgType=="image/".$allowedType[$i]){
+                    return true;
+                    break;
+                }
+                $i++;
+            }
+            return false;
+        }
+        else
+        {
+            if($ImgType=='image/jpg' || $ImgType=='image/png' || $ImgType=='image/gif')
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 
     /**

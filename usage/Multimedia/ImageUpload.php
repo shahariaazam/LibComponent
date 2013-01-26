@@ -8,7 +8,7 @@
 require_once "../../src/Lib/Multimedia/ImageUpload.php";
 //Create ImageUpload Object
 $obj = new ImageUpload();
-echo $obj->ImgUpload();
+echo $obj->ImgUpload(null,null,null,null);
 ?>
 <form action="?click=upload" method="post" enctype="multipart/form-data">
     <input type="file" name="ImgName"/>
